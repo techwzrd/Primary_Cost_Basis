@@ -974,7 +974,7 @@
   <section class="card" style="margin-bottom:24px">
     <div class="sec-head"><span class="num">?</span><h3>Questions that need your answers</h3></div>
     <p>
-      Each answer below changes something concrete in the plan &mdash; the italic note under each question
+      Each answer below changes something concrete in the plan &mdash; the note beneath each question
       says what. Nothing is required; answer what you can and leave the rest. Your responses save
       automatically in this browser and stay on your machine, so you can close the file and come back to it.
       When you are ready to hand them back, use <strong>Export Markdown</strong>.
@@ -1086,7 +1086,7 @@
   </fieldset>
 
   <!-- ---------------- B ---------------- -->
-  <fieldset class="qgroup" data-group="Scope of history">
+  <fieldset class="qgroup" data-group="Scope of the historical backlog">
     <legend>B &middot; Scope of the historical backlog</legend>
     <p class="qgroup-intro">This section drives the single biggest design decision: whether to build automation at all.</p>
 
@@ -1149,7 +1149,7 @@
   </fieldset>
 
   <!-- ---------------- C ---------------- -->
-  <fieldset class="qgroup" data-group="Reductions">
+  <fieldset class="qgroup" data-group="Basis reductions &amp; Florida events">
     <legend>C &middot; Basis reductions &amp; Florida events</legend>
     <p class="qgroup-intro">The items most homeowners miss. Getting these wrong overstates basis, which is the risky direction.</p>
 
@@ -1209,7 +1209,7 @@
   </fieldset>
 
   <!-- ---------------- D ---------------- -->
-  <fieldset class="qgroup" data-group="Data sources">
+  <fieldset class="qgroup" data-group="Where the receipts actually are">
     <legend>D &middot; Where the receipts actually are</legend>
     <p class="qgroup-intro">Determines which harvest connectors get built and in what order.</p>
 
@@ -1280,7 +1280,7 @@
   </fieldset>
 
   <!-- ---------------- E ---------------- -->
-  <fieldset class="qgroup" data-group="Tooling">
+  <fieldset class="qgroup" data-group="Tooling &amp; platform">
     <legend>E &middot; Tooling &amp; platform</legend>
     <p class="qgroup-intro">Settles the build-versus-buy decision in section 04.</p>
 
@@ -1347,7 +1347,7 @@
   </fieldset>
 
   <!-- ---------------- F ---------------- -->
-  <fieldset class="qgroup" data-group="Process">
+  <fieldset class="qgroup" data-group="Process &amp; governance">
     <legend>F &middot; Process &amp; governance</legend>
     <p class="qgroup-intro">Determines who makes judgment calls and how the system stays alive over a long horizon.</p>
 
@@ -1648,13 +1648,19 @@
         var v = valueOf(n);
         if (!isFilled(v)) return;
         wrote = true;
-        var text = Array.isArray(v) ? v.join(", ") : v;
-        var prefix = q.names.length > 1 ? "- **" + n + ":** " : "- ";
-        if (String(text).indexOf("\n") !== -1) {
-          lines.push(prefix.replace(/\s+$/, ""));
-          String(text).split("\n").forEach(function (ln) { lines.push("  " + ln); });
+
+        var parts = Array.isArray(v)
+          ? [v.join(", ")]
+          : String(v).split("\n").map(function (s) { return s.trim(); })
+              .filter(function (s) { return s.length; });
+
+        if (q.names.length > 1) {
+          // Label the sub-field, then indent any continuation lines under it.
+          lines.push("- **" + n + ":** " + parts[0]);
+          parts.slice(1).forEach(function (ln) { lines.push("  " + ln); });
         } else {
-          lines.push(prefix + text);
+          // A free-text list reads best as one bullet per line.
+          parts.forEach(function (ln) { lines.push("- " + ln); });
         }
       });
       if (!wrote) lines.push("- _(no answer)_");
