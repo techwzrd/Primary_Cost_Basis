@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Primary Residence Cost Basis Tracker &mdash; Plan &amp; Open Questions</title>
+<style>
+  :root{
+    --bg:#f6f7f9;
+    --surface:#ffffff;
+    --surface-2:#f0f2f5;
+    --ink:#14181f;
+    --ink-2:#495264;
+    --ink-3:#6b7488;
+    --line:#dde1e8;
+    --line-2:#eceff4;
+    --accent:#1f5f4e;
+    --accent-2:#2c8069;
+    --accent-soft:#e6f2ee;
+    --warn:#8a5a00;
+    --warn-soft:#fdf3e0;
+    --danger:#8c2f2f;
+    --danger-soft:#fbeceb;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(16,24,40,.05), 0 6px 20px -8px rgba(16,24,40,.14);
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-size:16px;line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 96px}
+
+  /* ---------- Header ---------- */
+  header.masthead{
+    background:linear-gradient(160deg,#1b3a33 0%,#24564a 55%,#2c8069 100%);
+    color:#fff;padding:40px 0 0;
+  }
+  .masthead .wrap{padding-bottom:0}
+  .eyebrow{
+    text-transform:uppercase;letter-spacing:.13em;font-size:11.5px;font-weight:700;
+    color:#a9d8c8;margin:0 0 10px;
+  }
+  h1.title{font-size:31px;line-height:1.22;margin:0 0 10px;font-weight:700;letter-spacing:-.018em}
+  .subtitle{margin:0 0 22px;color:#cfe6dd;font-size:16px;max-width:74ch}
+  .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px;padding:0;list-style:none}
+  .meta-row li{
+    background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;padding:4px 13px;font-size:12.5px;color:#e6f4ef;
+  }
+  .meta-row li b{color:#fff;font-weight:600}
+
+  /* ---------- Tabs ---------- */
+  .tabs{display:flex;gap:4px;border-bottom:none}
+  .tab{
+    appearance:none;border:none;cursor:pointer;font:inherit;font-size:14.5px;font-weight:600;
+    background:rgba(255,255,255,.10);color:#cfe6dd;
+    padding:12px 22px;border-radius:9px 9px 0 0;transition:background .15s,color .15s;
+    display:inline-flex;align-items:center;gap:9px;
+  }
+  .tab:hover{background:rgba(255,255,255,.19);color:#fff}
+  .tab[aria-selected="true"]{background:var(--bg);color:var(--ink)}
+  .tab .pill{
+    font-size:11px;font-weight:700;background:rgba(255,255,255,.22);color:#fff;
+    border-radius:999px;padding:1px 8px;line-height:1.7;
+  }
+  .tab[aria-selected="true"] .pill{background:var(--accent-soft);color:var(--accent)}
+  .tab:focus-visible{outline:2px solid #fff;outline-offset:-3px}
+
+  .panel{padding-top:34px}
+  .panel[hidden]{display:none}
+
+  /* ---------- Typography ---------- */
+  h2{
+    font-size:13px;text-transform:uppercase;letter-spacing:.11em;color:var(--accent);
+    margin:0 0 6px;font-weight:700;
+  }
+  h3{font-size:22px;line-height:1.3;margin:0 0 14px;font-weight:650;letter-spacing:-.012em}
+  h4{font-size:16.5px;margin:26px 0 8px;font-weight:650}
+  h5{font-size:14px;margin:18px 0 6px;font-weight:650;color:var(--ink-2)}
+  p{margin:0 0 14px;color:var(--ink-2)}
+  p.lead{font-size:17px;color:var(--ink);margin-bottom:18px}
+  ul,ol{margin:0 0 14px;padding-left:22px;color:var(--ink-2)}
+  li{margin:0 0 7px}
+  li::marker{color:var(--ink-3)}
+  strong{color:var(--ink);font-weight:650}
+  code{
+    font-family:var(--mono);font-size:.875em;background:var(--surface-2);
+    border:1px solid var(--line-2);border-radius:5px;padding:1px 5px;color:#25405c;
+  }
+  a{color:var(--accent-2)}
+
+  /* ---------- Cards / sections ---------- */
+  section.card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 30px;margin:0 0 20px;box-shadow:var(--shadow);
+  }
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .sec-head .num{
+    font-family:var(--mono);font-size:12px;color:var(--accent);background:var(--accent-soft);
+    border-radius:6px;padding:3px 8px;font-weight:700;flex:none;
+  }
+  .sec-head h3{margin:0}
+
+  /* ---------- Callouts ---------- */
+  .callout{
+    border-left:3px solid var(--accent);background:var(--accent-soft);
+    border-radius:0 8px 8px 0;padding:14px 18px;margin:0 0 16px;
+  }
+  .callout.warn{border-left-color:#c48a1e;background:var(--warn-soft)}
+  .callout.danger{border-left-color:#b9534f;background:var(--danger-soft)}
+  .callout p:last-child{margin-bottom:0}
+  .callout .tag{
+    display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;
+    color:var(--accent);margin-bottom:4px;
+  }
+  .callout.warn .tag{color:var(--warn)}
+  .callout.danger .tag{color:var(--danger)}
+
+  /* ---------- Tables ---------- */
+  .table-scroll{overflow-x:auto;margin:0 0 18px;border:1px solid var(--line);border-radius:8px}
+  table{border-collapse:collapse;width:100%;font-size:14px;background:var(--surface)}
+  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+  thead th{
+    background:var(--surface-2);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#fafbfc}
+  td.num,th.num{text-align:right;font-family:var(--mono);font-size:13px;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:650}
+  .no{color:var(--danger);font-weight:650}
+  .maybe{color:var(--warn);font-weight:650}
+
+  /* ---------- Two column ---------- */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .cols-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:820px){.cols,.cols-3{grid-template-columns:1fr}}
+
+  .minibox{
+    border:1px solid var(--line);border-radius:8px;padding:15px 17px;background:#fcfdfd;height:100%;
+  }
+  .minibox h5{margin-top:0}
+  .minibox p:last-child,.minibox ul:last-child{margin-bottom:0}
+
+  /* ---------- Phase timeline ---------- */
+  .phase{
+    border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    padding:16px 20px;margin:0 0 14px;background:#fcfdfd;
+  }
+  .phase-head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .phase-head h4{margin:0;font-size:16px}
+  .effort{
+    font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+    border-radius:999px;padding:3px 10px;white-space:nowrap;
+  }
+  .effort.low{background:var(--accent-soft);color:var(--accent)}
+  .effort.med{background:var(--warn-soft);color:var(--warn)}
+  .effort.high{background:var(--danger-soft);color:var(--danger)}
+  .phase .ac{font-size:13.5px;color:var(--ink-3);margin:10px 0 0;border-top:1px dashed var(--line);padding-top:9px}
+  .phase .ac b{color:var(--ink-2)}
+
+  /* ---------- Chips ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+  .chips li{
+    font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:6px;padding:3px 10px;color:var(--ink-2);
+  }
+
+  /* ---------- Questions tab ---------- */
+  .q-toolbar{
+    position:sticky;top:0;z-index:20;background:rgba(246,247,249,.93);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    margin:0 -24px 22px;padding:12px 24px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .btn{
+    appearance:none;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+    border-radius:7px;padding:7px 14px;transition:.15s;
+  }
+  .btn:hover{background:var(--surface-2);color:var(--ink);border-color:#c9cfda}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{background:var(--accent-2);border-color:var(--accent-2);color:#fff}
+  .btn.ghost{background:transparent;border-color:transparent;color:var(--ink-3)}
+  .btn.ghost:hover{color:var(--danger);background:var(--danger-soft)}
+  .btn:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+  .spacer{flex:1 1 auto}
+  .status{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .status b{color:var(--accent);font-weight:700}
+  .progress-track{width:130px;height:6px;border-radius:999px;background:var(--line);overflow:hidden;flex:none}
+  .progress-fill{height:100%;width:0%;background:var(--accent-2);transition:width .3s ease}
+
+  fieldset.qgroup{
+    border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);
+    padding:0 0 8px;margin:0 0 20px;box-shadow:var(--shadow);
+  }
+  fieldset.qgroup > legend{
+    font-size:12px;text-transform:uppercase;letter-spacing:.11em;font-weight:700;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--line);border-radius:7px;
+    padding:5px 13px;margin-left:22px;
+  }
+  .qgroup-intro{padding:12px 26px 2px;font-size:14px;color:var(--ink-3);margin:0}
+
+  .q{padding:16px 26px;border-bottom:1px solid var(--line-2)}
+  .q:last-child{border-bottom:none}
+  .q-label{display:block;font-weight:650;font-size:15px;margin:0 0 3px;color:var(--ink)}
+  .q-label .qid{
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-3);font-weight:600;margin-right:8px;
+  }
+  .q-help{font-size:13.5px;color:var(--ink-3);margin:0 0 10px}
+  .q-help .why{color:var(--accent-2);font-weight:600}
+  .q-why{
+    font-size:12.5px;color:var(--ink-3);margin:8px 0 0;padding-left:11px;
+    border-left:2px solid var(--line);
+  }
+
+  input[type=text],input[type=date],input[type=number],select,textarea{
+    width:100%;font:inherit;font-size:14.5px;color:var(--ink);
+    background:#fdfdfe;border:1px solid var(--line);border-radius:7px;padding:9px 12px;
+    transition:border-color .15s,box-shadow .15s,background .15s;
+  }
+  textarea{min-height:74px;resize:vertical;line-height:1.55}
+  input:focus,select:focus,textarea:focus{
+    outline:none;border-color:var(--accent-2);background:#fff;
+    box-shadow:0 0 0 3px rgba(44,128,105,.14);
+  }
+  input.answered,select.answered,textarea.answered{border-left:3px solid var(--accent-2)}
+  select{cursor:pointer}
+
+  .opts{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+  .opt{
+    display:inline-flex;align-items:center;gap:7px;font-size:14px;cursor:pointer;
+    border:1px solid var(--line);border-radius:7px;padding:6px 13px;background:#fdfdfe;
+    transition:.15s;color:var(--ink-2);
+  }
+  .opt:hover{border-color:#b9c2d0;background:#fff}
+  .opt input{accent-color:var(--accent-2);margin:0;cursor:pointer}
+  .opt:has(input:checked){border-color:var(--accent-2);background:var(--accent-soft);color:var(--accent);font-weight:600}
+
+  .subq{margin-top:10px}
+  .subq-label{font-size:13px;color:var(--ink-3);display:block;margin:0 0 4px;font-weight:600}
+
+  dialog.export{
+    border:1px solid var(--line);border-radius:12px;padding:0;max-width:840px;width:92vw;
+    box-shadow:0 20px 60px -14px rgba(16,24,40,.4);
+  }
+  dialog.export::backdrop{background:rgba(16,24,40,.45)}
+  .dlg-head{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:16px 22px;border-bottom:1px solid var(--line);
+  }
+  .dlg-head h4{margin:0;font-size:16px}
+  .dlg-body{padding:18px 22px}
+  .dlg-body textarea{
+    min-height:390px;font-family:var(--mono);font-size:12.5px;line-height:1.55;white-space:pre;
+  }
+  .dlg-foot{
+    display:flex;gap:9px;justify-content:flex-end;padding:14px 22px;
+    border-top:1px solid var(--line);background:var(--surface-2);border-radius:0 0 12px 12px;
+  }
+
+  footer.foot{
+    margin-top:34px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--ink-3);
+  }
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);
+    background:var(--ink);color:#fff;font-size:13.5px;font-weight:600;
+    padding:9px 18px;border-radius:8px;box-shadow:var(--shadow);
+    opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media print{
+    header.masthead{background:none;color:#000;padding-top:0}
+    .eyebrow,.subtitle{color:#444}
+    .meta-row li{background:none;border-color:#ccc;color:#333}
+    .tabs,.q-toolbar{display:none}
+    .panel[hidden]{display:block !important}
+    section.card,fieldset.qgroup{box-shadow:none;break-inside:avoid}
+    body{background:#fff;font-size:11.5pt}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">Planning Document &middot; Draft for Review</p>
+    <h1 class="title">Cost Basis Tracking for a Florida Primary Residence</h1>
+    <p class="subtitle">
+      A plan to reconstruct historical cost basis from receipts scattered across email, cloud storage, and
+      local files &mdash; and to capture every qualifying expense from here forward, in a form that survives
+      an IRS challenge decades from now.
+    </p>
+    <ul class="meta-row">
+      <li>Prepared for <b>Sam</b></li>
+      <li>Property type <b>Primary residence</b></li>
+      <li>State <b>Florida</b></li>
+      <li>Status <b>Awaiting input on open questions</b></li>
+      <li>Version <b>0.1</b></li>
+    </ul>
+    <div class="tabs" role="tablist" aria-label="Document sections">
+      <button class="tab" id="tab-plan" role="tab" aria-selected="true" aria-controls="panel-plan">
+        The Plan
+      </button>
+      <button class="tab" id="tab-questions" role="tab" aria-selected="false" aria-controls="panel-questions" tabindex="-1">
+        Open Questions <span class="pill" id="tab-q-count">0/0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ==================================================================== -->
+<!-- ============================ PLAN TAB ============================== -->
+<!-- ==================================================================== -->
+<div class="panel" id="panel-plan" role="tabpanel" aria-labelledby="tab-plan">
+
+  <section class="card">
+    <div class="sec-head"><span class="num">01</span><h3>Why this is worth doing</h3></div>
+    <p class="lead">
+      When you eventually sell, your federal taxable gain is
+      <strong>sale price &minus; selling expenses &minus; adjusted basis</strong>. Section 121 lets you exclude
+      $250,000 of that gain if you file single, or $500,000 filing jointly. Those limits were set in 1997 and
+      have never been indexed to inflation, so in much of Florida a long-held home now blows straight through them.
+    </p>
+    <p>
+      Adjusted basis is the only lever you still control after purchase. Every qualifying improvement you can
+      document raises basis dollar-for-dollar and lowers the gain dollar-for-dollar. Undocumented improvements
+      are worth nothing &mdash; the burden of proof is on the taxpayer, and a memory of "we redid the kitchen
+      around 2016" is not proof.
+    </p>
+    <p>
+      Florida has no state income tax, so this is a purely federal exercise. Any gain above the exclusion is
+      taxed at long-term capital gains rates, potentially plus the 3.8% net investment income tax. A well-kept
+      basis file is realistically worth tens of thousands of dollars at sale, and the cost of keeping it is a
+      few hours a quarter.
+    </p>
+    <div class="callout warn">
+      <span class="tag">Not tax advice</span>
+      <p>
+        This plan encodes the general rules in IRS Publication 523 and Publication 551 so that you collect
+        the right evidence. It is a record-keeping system, not a tax opinion. Every judgment call about
+        whether a specific expense is a capital improvement should be confirmed with your CPA before it
+        lands on a return.
+      </p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">02</span><h3>What actually counts &mdash; the rules the system must encode</h3></div>
+    <p>
+      The design goal is that the tool mirrors the structure of <strong>IRS Publication 523, Worksheet 2</strong>.
+      If the data model matches the worksheet, then producing a defensible number at sale is a report, not a
+      research project.
+    </p>
+
+    <h4>Items that increase basis</h4>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Worksheet 2 line</th><th>Bucket</th><th>What belongs here</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">4a</td><td><strong>Purchase price</strong></td><td>What you paid, including down payment and the full amount borrowed. If you built, the cost of the land plus construction cost.</td></tr>
+          <tr><td class="num">4b</td><td><strong>Acquisition closing costs</strong></td><td>Abstract/title search fees, owner's title insurance, recording fees, survey fees, transfer and stamp taxes, legal fees, utility installation charges. <em>Excludes</em> anything financing-related.</td></tr>
+          <tr><td class="num">4c</td><td><strong>Seller costs you absorbed</strong></td><td>Seller's back taxes, seller's recording fees, seller-responsibility repairs you agreed to pay and were never reimbursed for.</td></tr>
+          <tr><td class="num">4d</td><td><strong>Capital improvements</strong></td><td>The big one. Work that adds value, prolongs useful life, or adapts the home to a new use &mdash; and that is <em>still part of the home</em> at sale.</td></tr>
+          <tr><td class="num">4e</td><td><strong>Damage repair</strong></td><td>Amounts spent repairing damage to the home or the land it sits on. Highly relevant after a Florida named storm.</td></tr>
+          <tr><td class="num">4f</td><td><strong>Special assessments</strong></td><td>HOA or municipal assessments for <em>local improvements</em> &mdash; not assessments that are merely for repairs or ongoing maintenance.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h5>Publication 523's own improvement categories &mdash; use these verbatim as the category list</h5>
+    <ul class="chips">
+      <li>Additions: bedroom, bathroom, deck, garage, porch, patio</li>
+      <li>Lawn &amp; grounds: landscaping, driveway, walkway, fence, retaining wall, swimming pool</li>
+      <li>Systems: heating, central A/C, furnace, ductwork, humidifier, central vacuum, filtration, wiring, security system, lawn sprinklers</li>
+      <li>Exterior: storm windows/doors, new roof, new siding, satellite dish</li>
+      <li>Insulation: attic, walls, floors, pipes and ductwork</li>
+      <li>Plumbing: septic system, water heater, soft water system, filtration</li>
+      <li>Interior: built-in appliances, kitchen modernization, flooring, wall-to-wall carpeting, fireplace</li>
+    </ul>
+
+    <h4>Items that decrease basis &mdash; the part most homeowners forget</h4>
+    <p>
+      Tracking only the additions produces an <em>overstated</em> basis, which is the failure mode that
+      actually gets penalized. The system must give equal weight to reductions.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Worksheet 2 line</th><th>Reduction</th><th>Florida relevance</th></tr></thead>
+        <tbody>
+          <tr><td class="num">5a</td><td>Depreciation taken or allowable for business or rental use</td><td>Home office deductions, a period as a rental, or short-term rental use. Note "or allowable" &mdash; it bites even if you never claimed it.</td></tr>
+          <tr><td class="num">5b</td><td>Casualty losses claimed as a federal deduction</td><td>Hurricane and flood loss deductions taken in a federally declared disaster year.</td></tr>
+          <tr><td class="num">5c</td><td>Insurance payments received <em>or expected</em> for casualty losses</td><td>Windstorm, flood, and Citizens claim proceeds. Applies even while a claim is still open.</td></tr>
+          <tr><td class="num">5d</td><td>Payments for granting an easement or right-of-way</td><td>Utility, drainage, or conservation easements.</td></tr>
+          <tr><td class="num">5e</td><td>Energy credits and subsidies that paid you back for improvements in basis</td><td>Residential clean energy credit (solar, battery, geothermal), energy-efficiency credits for windows/doors/heat pumps, utility rebates, home energy audit credits.</td></tr>
+          <tr><td class="num">5f&ndash;5l</td><td>Adoption credits, seller-paid taxes and points, forgiven mortgage debt, deducted sales tax, builder-provided temporary housing, pre-1997 postponed gain</td><td>Situational, but cheap to screen for once.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>What is explicitly excluded</h4>
+    <ul>
+      <li><strong>Repairs and maintenance</strong> that merely keep the home in good condition &mdash; painting, fixing leaks, patching cracks, replacing broken hardware.</li>
+      <li><strong>Improvements no longer part of the home.</strong> Carpet you installed in 2012 and tore out in 2021 comes back out of basis. This is why the data model needs a "superseded by" link, not just an append-only list.</li>
+      <li><strong>Anything with a useful life under one year</strong> when installed.</li>
+      <li><strong>Financing costs</strong> &mdash; points, origination fees, appraisal required by the lender, credit report fees, mortgage insurance, refinance costs.</li>
+      <li><strong>Your own labor.</strong> Sweat equity has zero basis. Materials you bought for a DIY project do count.</li>
+    </ul>
+    <div class="callout">
+      <span class="tag">The exception worth knowing</span>
+      <p>
+        Repair-type work counts when it is part of an extensive remodel or restoration. Replacing one broken
+        windowpane is a repair; replacing that same window as part of replacing all the windows is an
+        improvement. Likewise, post-casualty repairs that restore the home to its pre-casualty condition
+        increase basis &mdash; offset by any insurance reimbursement received or expected. The practical
+        consequence: <strong>capture whole projects, not loose receipts.</strong> A receipt-level tool that
+        cannot group line items into a project will misclassify a large share of Florida storm work.
+      </p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">03</span><h3>Florida-specific considerations</h3></div>
+    <div class="cols">
+      <div class="minibox">
+        <h5>Hurricane hardening and mitigation</h5>
+        <p>
+          Impact windows and doors, roof-to-wall straps, secondary water barriers, reinforced garage doors,
+          and whole-house generators are classic basis-increasing improvements. But if you took a
+          <strong>My Safe Florida Home</strong> matching grant (state pays $2 per $1 up to $10,000), only
+          <em>your</em> out-of-pocket share belongs in basis &mdash; the grant portion is a subsidy, not your cost.
+          Same logic for FEMA mitigation grants and utility rebates.
+        </p>
+      </div>
+      <div class="minibox">
+        <h5>Storm damage and insurance</h5>
+        <p>
+          Named-storm repairs increase basis under line 4e, but insurance proceeds and any deducted casualty
+          loss reduce it. For every storm event the system needs a linked record: repair spend, claim number,
+          proceeds received, proceeds still expected, and whether a casualty loss was deducted. Getting this
+          pairing wrong in either direction is the single largest accuracy risk in a Florida basis file.
+        </p>
+      </div>
+      <div class="minibox">
+        <h5>Closing costs and doc stamps</h5>
+        <p>
+          Florida charges documentary stamp tax on the deed at $0.70 per $100 of price ($0.60 in Miami-Dade),
+          customarily paid by the seller, plus $0.35 per $100 on the note and $0.20 per $100 intangible tax
+          on the mortgage, customarily paid by the buyer. Deed stamps you paid go into basis; the
+          mortgage-side taxes are financing costs and do not. Your actual settlement statement governs, not
+          the custom &mdash; so the closing document itself must be in the vault.
+        </p>
+      </div>
+      <div class="minibox">
+        <h5>Coastal and lot improvements</h5>
+        <p>
+          Seawalls, docks, boat lifts, screen enclosures and lanais, pools, pavers, irrigation wells,
+          septic-to-sewer conversion, and elevation work are all basis-eligible and common here. Many require
+          permits, which is convenient: a permit record is durable third-party evidence that survives long
+          after a contractor goes out of business.
+        </p>
+      </div>
+      <div class="minibox">
+        <h5>Property tax exemptions are a separate matter</h5>
+        <p>
+          Homestead exemption, Save Our Homes assessment caps, and portability affect your annual property
+          tax bill. They have <em>no</em> effect on federal cost basis. Keep them out of this system so the
+          basis number stays clean; note them elsewhere if useful.
+        </p>
+      </div>
+      <div class="minibox">
+        <h5>Public records as a fallback source</h5>
+        <p>
+          Florida county building departments and property appraisers publish permit and improvement history
+          online. Where receipts are permanently lost, a permit record plus a bank or card statement showing
+          payment to the permitted contractor is a far stronger reconstruction than an estimate. Treat county
+          records as a first-class harvest source, not a last resort.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">04</span><h3>Build, buy, or spreadsheet?</h3></div>
+    <p>
+      This decision hinges almost entirely on volume and on how much unharvested history exists. Below is the
+      honest comparison.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Option</th><th>Effort</th><th>Handles bulk harvest?</th>
+            <th>Audit-grade evidence?</th><th>Fails when&hellip;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Excel or Google Sheets</strong><br><span class="q-help">Structured workbook + a disciplined folder of source documents</span></td>
+            <td>Low</td>
+            <td class="no">No &mdash; manual entry</td>
+            <td class="yes">Yes, if document links are enforced</td>
+            <td>You have hundreds of legacy receipts to find and key in by hand.</td>
+          </tr>
+          <tr>
+            <td><strong>Off-the-shelf home management apps</strong><br><span class="q-help">HomeZada, Centriq, and similar</span></td>
+            <td>Low</td>
+            <td class="no">Limited</td>
+            <td class="maybe">Partly &mdash; export and longevity risk</td>
+            <td>The vendor sunsets the product or changes export formats before you sell in 15 years.</td>
+          </tr>
+          <tr>
+            <td><strong>General-purpose database</strong><br><span class="q-help">Airtable or Notion with attachments</span></td>
+            <td>Low&ndash;Med</td>
+            <td class="maybe">Partly &mdash; via imports</td>
+            <td class="yes">Yes</td>
+            <td>Attachment storage limits bite, or pricing changes on a decade-long horizon.</td>
+          </tr>
+          <tr>
+            <td><strong>Custom local-first app</strong><br><span class="q-help">Local database, document vault, ingestion connectors, extraction pipeline</span></td>
+            <td>High</td>
+            <td class="yes">Yes &mdash; this is the point</td>
+            <td class="yes">Yes</td>
+            <td>You build a system that outlives your willingness to maintain it.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Recommendation</span>
+      <p>
+        <strong>Split the problem.</strong> Harvesting decades of scattered receipts is a one-time batch job
+        that genuinely needs automation. Recording a handful of new projects a year is a data-entry job that
+        does not. So: build a <em>disposable</em> ingestion pipeline for the historical sweep, and land its
+        output in a <em>durable, boring</em> system of record &mdash; a spreadsheet plus an organized document
+        vault &mdash; that will still open without any special software in 2045.
+      </p>
+      <p>
+        Only promote the system of record to a real application if the open questions reveal high volume
+        (say, more than ~150 historical items), multiple people entering data, or a genuine need for
+        automated reconciliation against bank feeds.
+      </p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">05</span><h3>Architecture</h3></div>
+    <p>
+      Five components. The document vault and the ledger are permanent; everything else is replaceable
+      machinery pointed at them.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Component</th><th>Responsibility</th><th>Implementation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Document vault</strong></td>
+            <td>Immutable archive of every source document. Never edited, only added to. This is the evidence.</td>
+            <td>A plain folder tree, backed up in three places. Files named <code>YYYY-MM-DD__vendor__short-description__amount.pdf</code>. Content-hashed so duplicates from multiple sources collapse.</td>
+          </tr>
+          <tr>
+            <td><strong>2. Ledger</strong></td>
+            <td>One row per basis event, each pointing at its documents. The system of record.</td>
+            <td>Spreadsheet (or a table in the app). Columns map one-to-one onto Pub 523 Worksheet 2 lines.</td>
+          </tr>
+          <tr>
+            <td><strong>3. Harvest connectors</strong></td>
+            <td>Pull candidate documents out of email, cloud storage, local disk, and financial statements into a staging area.</td>
+            <td>Read-only API access or bulk export per source. Run once for history, then on a schedule or on demand.</td>
+          </tr>
+          <tr>
+            <td><strong>4. Extraction and classification</strong></td>
+            <td>Turn a document into a proposed ledger row: date, vendor, amount, category, capital-vs-repair call, confidence.</td>
+            <td>OCR for scans and photos, plus a rules layer for known vendors and an LLM assist for the ambiguous middle. Never auto-commits.</td>
+          </tr>
+          <tr>
+            <td><strong>5. Review and reporting</strong></td>
+            <td>Human approves or rejects every proposed row; produces the basis schedule and gain estimate.</td>
+            <td>A queue plus a small set of reports. The approval step is what makes the output trustworthy.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Ledger schema</h4>
+    <p>Minimum viable columns for the main <code>basis_events</code> table:</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>text</td><td>Stable identifier, e.g. <code>BE-0042</code>.</td></tr>
+          <tr><td><code>project_id</code></td><td>text</td><td>Groups receipts into one project. Essential for the remodel/restoration exception.</td></tr>
+          <tr><td><code>date_incurred</code></td><td>date</td><td>Invoice or in-service date, not the payment-clearing date.</td></tr>
+          <tr><td><code>vendor</code></td><td>text</td><td>Normalized; keep the raw string too.</td></tr>
+          <tr><td><code>description</code></td><td>text</td><td>Plain-language: what was done, where in the house.</td></tr>
+          <tr><td><code>amount</code></td><td>currency</td><td>Your net out-of-pocket cost.</td></tr>
+          <tr><td><code>worksheet_line</code></td><td>enum</td><td><code>4a</code>&hellip;<code>4f</code>, <code>5a</code>&hellip;<code>5l</code>. Drives the report directly.</td></tr>
+          <tr><td><code>category</code></td><td>enum</td><td>From the Pub 523 category list in section 02.</td></tr>
+          <tr><td><code>treatment</code></td><td>enum</td><td><code>capital</code> / <code>repair</code> / <code>mixed</code> / <code>reduction</code> / <code>excluded</code>.</td></tr>
+          <tr><td><code>confidence</code></td><td>enum</td><td><code>confirmed</code> / <code>likely</code> / <code>reconstructed</code> / <code>needs CPA</code>.</td></tr>
+          <tr><td><code>evidence_refs</code></td><td>list</td><td>Paths or hashes of vault documents. A row with none is not finished.</td></tr>
+          <tr><td><code>proof_of_payment</code></td><td>text</td><td>Card last four, check number, or transfer reference. Invoice alone proves obligation, not payment.</td></tr>
+          <tr><td><code>permit_number</code></td><td>text</td><td>County permit if one exists. Strongest long-term evidence.</td></tr>
+          <tr><td><code>reimbursement</code></td><td>currency</td><td>Insurance, grant, rebate, or credit that offsets this cost.</td></tr>
+          <tr><td><code>still_in_home</code></td><td>bool</td><td>Set false when the item is removed or replaced.</td></tr>
+          <tr><td><code>superseded_by</code></td><td>id</td><td>Points at the event that replaced it. Drives automatic backing-out.</td></tr>
+          <tr><td><code>storm_event</code></td><td>text</td><td>Named storm or casualty event, where applicable.</td></tr>
+          <tr><td><code>source</code></td><td>text</td><td>Which harvest connector found it, for traceability.</td></tr>
+          <tr><td><code>notes</code></td><td>text</td><td>Reasoning for judgment calls &mdash; the "why" you will not remember later.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Supporting tables: <code>projects</code>, <code>documents</code> (hash, path, source, ingested date),
+      <code>vendors</code>, <code>casualty_events</code> (storm, claim number, proceeds received, proceeds
+      expected, loss deducted), and <code>review_queue</code>.
+    </p>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">06</span><h3>Harvesting existing receipts</h3></div>
+    <p>
+      Run these sources roughly in the order below. Each pass tends to surface leads for the next &mdash;
+      a card statement reveals a contractor name you then search email for.
+    </p>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Source</th><th>How to extract</th><th>What you get</th><th>Watch out for</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Email</strong><br><span class="q-help">Gmail, Outlook, iCloud, Yahoo &mdash; including old and shared accounts</span></td>
+            <td>Read-only API access or a full mailbox export. Run targeted searches, then bulk-pull attachments and receipt-shaped message bodies.</td>
+            <td>Contractor invoices, big-box order confirmations, permit correspondence, insurance claim letters, HOA assessment notices.</td>
+            <td>Many receipts are HTML bodies with no attachment &mdash; those need rendering to PDF, not just attachment extraction. Search both spouses' accounts.</td>
+          </tr>
+          <tr>
+            <td><strong>Cloud storage</strong><br><span class="q-help">Drive, Dropbox, OneDrive, iCloud, Box</span></td>
+            <td>Recursive scan for documents and images; filter by filename patterns and by OCR'd content.</td>
+            <td>Scanned closing packages, contractor bids and contracts, warranty paperwork, project photos.</td>
+            <td>The same document existing in three services &mdash; deduplicate by content hash, not filename.</td>
+          </tr>
+          <tr>
+            <td><strong>Local disk</strong></td>
+            <td>Scan Documents, Downloads, Desktop, and any old external drive or migrated user folder.</td>
+            <td>Whatever never made it to the cloud. Often the oldest and most valuable material.</td>
+            <td>Legacy formats and dead file types. Convert to PDF or PNG on the way into the vault.</td>
+          </tr>
+          <tr>
+            <td><strong>Photo libraries</strong></td>
+            <td>Search Apple/Google Photos for text in images; both index receipt text now. Also pull before/after project photos.</td>
+            <td>Snapshots of paper receipts, and dated visual proof that work was done.</td>
+            <td>Photo EXIF dates are excellent corroboration &mdash; capture them into the ledger.</td>
+          </tr>
+          <tr>
+            <td><strong>Financial records</strong><br><span class="q-help">Bank and card statements, checking images</span></td>
+            <td>Export CSV/OFX per year per account. Filter for home-improvement merchant categories and large one-off payments.</td>
+            <td>Proof of payment, plus discovery of projects whose receipts are gone.</td>
+            <td>A statement line alone is weak evidence of <em>what</em> was bought. Pair it with a permit, contract, or photo.</td>
+          </tr>
+          <tr>
+            <td><strong>Retailer purchase history</strong><br><span class="q-help">Home Depot, Lowe's, Amazon, Best Buy, Wayfair</span></td>
+            <td>Log in and export order history. Retailers often retain far more years than your inbox does.</td>
+            <td>Itemized line detail that email confirmations lack.</td>
+            <td>Mixed carts &mdash; a single order may contain both capital and consumable items and needs splitting.</td>
+          </tr>
+          <tr>
+            <td><strong>County public records</strong><br><span class="q-help">Building department, property appraiser, clerk of court</span></td>
+            <td>Search permit history by parcel or address; pull the property appraiser's improvement record and recorded deed.</td>
+            <td>Independent third-party confirmation of what was built and when. Durable for decades.</td>
+            <td>Permits show scope and date but rarely your actual cost &mdash; combine with payment evidence.</td>
+          </tr>
+          <tr>
+            <td><strong>Third parties</strong><br><span class="q-help">Title company, closing attorney, insurer, HOA, contractors</span></td>
+            <td>Direct request for archived copies.</td>
+            <td>The original settlement statement, claim histories, assessment resolutions.</td>
+            <td>Retention windows are finite. Request these <em>early</em> in the project, not last.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Search vocabulary for the email and file sweep</h4>
+    <ul class="chips">
+      <li>invoice</li><li>receipt</li><li>estimate</li><li>quote</li><li>proposal</li><li>work order</li>
+      <li>paid in full</li><li>final invoice</li><li>deposit</li><li>change order</li><li>permit</li>
+      <li>inspection</li><li>certificate of completion</li><li>lien release</li><li>warranty</li>
+      <li>roof</li><li>impact window</li><li>hurricane shutter</li><li>HVAC</li><li>air handler</li>
+      <li>water heater</li><li>re-pipe</li><li>electrical panel</li><li>generator</li><li>solar</li>
+      <li>pool</li><li>screen enclosure</li><li>lanai</li><li>pavers</li><li>driveway</li><li>fence</li>
+      <li>seawall</li><li>dock</li><li>septic</li><li>irrigation</li><li>flooring</li><li>cabinets</li>
+      <li>countertop</li><li>remodel</li><li>renovation</li><li>addition</li><li>claim number</li>
+      <li>adjuster</li><li>special assessment</li><li>closing disclosure</li><li>settlement statement</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="tag">Sequence this correctly</span>
+      <p>
+        Do the <strong>financial statement sweep first</strong>, even though it yields the weakest evidence.
+        It produces the definitive list of <em>what projects exist</em> and what they cost. Everything after
+        that becomes a targeted hunt for documents you know are out there, rather than an open-ended trawl
+        through twenty years of email hoping something turns up.
+      </p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">07</span><h3>Extraction, classification, and review</h3></div>
+    <p>Every harvested document runs the same path. Nothing reaches the ledger without a human approving it.</p>
+    <ol>
+      <li><strong>Ingest and hash.</strong> Copy into the vault, compute a content hash, drop exact duplicates, keep a record of every source that produced the file.</li>
+      <li><strong>Normalize.</strong> Convert to PDF or PNG. OCR anything that is an image or a scan.</li>
+      <li><strong>Extract fields.</strong> Vendor, date, total, line items, invoice number, payment method, permit number.</li>
+      <li><strong>Classify.</strong> A deterministic rules layer first (known vendors, known keywords, amount thresholds), then an LLM for the residue, returning a proposed category, worksheet line, and treatment along with a confidence score and a one-line rationale.</li>
+      <li><strong>Group into projects.</strong> Cluster by vendor, date proximity, and description so the remodel/restoration exception can be applied to whole jobs.</li>
+      <li><strong>Queue for review.</strong> Sort by dollar impact descending &mdash; your attention should go where the money is.</li>
+      <li><strong>Approve, edit, or reject.</strong> Approval writes the ledger row. Rejection is retained with a reason, so the same document is not reconsidered on every future run.</li>
+      <li><strong>Flag for CPA.</strong> A dedicated status for genuinely ambiguous calls, exported as a single list at year end rather than as a trickle of one-off questions.</li>
+    </ol>
+    <div class="callout danger">
+      <span class="tag">Design constraint</span>
+      <p>
+        Automated classification must never write directly to the ledger. The value of this system at audit
+        time is that a human reviewed and stands behind every line. An LLM's guess about whether a $9,400
+        payment was a re-roof or a roof repair is a starting point for your judgment, not a substitute for it.
+      </p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">08</span><h3>Capturing new expenses going forward</h3></div>
+    <p>
+      The historical sweep is a project. This is the part that has to still be working in ten years, which
+      means it has to be nearly effortless. Three capture paths, all landing in the same review queue:
+    </p>
+    <div class="cols-3">
+      <div class="minibox">
+        <h5>Forward-to-file</h5>
+        <p>
+          A dedicated email address for the property. Forward any receipt to it and it is auto-ingested. Give
+          the address to contractors as the billing contact so their invoices arrive there directly.
+        </p>
+      </div>
+      <div class="minibox">
+        <h5>Snap-and-drop</h5>
+        <p>
+          Phone photo of a paper receipt into a watched cloud folder. OCR and extraction happen on ingest;
+          you confirm later at a desk rather than in a parking lot.
+        </p>
+      </div>
+      <div class="minibox">
+        <h5>Direct entry</h5>
+        <p>
+          A short form for the case where you know the answer immediately &mdash; especially useful at the
+          moment a project completes, when the scope and the reasoning are still fresh.
+        </p>
+      </div>
+    </div>
+    <h4>Standing habits worth adopting</h4>
+    <ul>
+      <li><strong>Open a project record before work starts,</strong> not after. Attach the bid, the contract, the permit, and before-photos as they arrive.</li>
+      <li><strong>Pay by card, check, or transfer.</strong> Cash payments to contractors are nearly impossible to substantiate later. If cash is unavoidable, get a signed paid-in-full receipt and photograph the work.</li>
+      <li><strong>Photograph before and after,</strong> with the phone's location and timestamp on. Costs nothing, corroborates everything.</li>
+      <li><strong>Record the reasoning</strong> for any capital-vs-repair judgment at the time you make it. Reconstructing your own logic years later is surprisingly hard.</li>
+      <li><strong>Log removals.</strong> When something is torn out, mark the original event <code>still_in_home = false</code> immediately. This is the discipline that keeps the number honest.</li>
+      <li><strong>Quarterly review, annual close.</strong> Clear the queue every quarter; each January, reconcile against the prior year's card statements to catch anything missed, and archive a snapshot.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">09</span><h3>Outputs</h3></div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Report</th><th>Purpose</th><th>When</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Adjusted basis schedule</strong></td><td>Every event grouped by Worksheet 2 line, with running totals and a document reference per row. The core deliverable.</td><td>On demand; archived annually</td></tr>
+          <tr><td><strong>Pub 523 Worksheet 2 fill</strong></td><td>The schedule collapsed to the exact lines your CPA needs, so nothing is re-derived at sale.</td><td>At sale, and annually as a dry run</td></tr>
+          <tr><td><strong>Gain and exclusion projection</strong></td><td>Enter an assumed sale price and selling costs; see estimated gain against the $250k/$500k exclusion. Turns an abstract habit into a visible number.</td><td>On demand</td></tr>
+          <tr><td><strong>Evidence gap report</strong></td><td>Rows lacking a document, proof of payment, or a confident classification &mdash; ranked by dollars at risk. This is your to-do list.</td><td>Quarterly</td></tr>
+          <tr><td><strong>CPA question list</strong></td><td>Everything flagged as ambiguous, with the document attached.</td><td>Annually</td></tr>
+          <tr><td><strong>Full archive export</strong></td><td>Ledger as CSV plus the entire vault, in open formats, restorable without any of this tooling.</td><td>Annually</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">10</span><h3>Security, privacy, and retention</h3></div>
+    <div class="cols">
+      <div class="minibox">
+        <h5>Access</h5>
+        <ul>
+          <li>Read-only, narrowly scoped credentials for every connector. Nothing needs write access to your email.</li>
+          <li>Revoke connector access as soon as the historical sweep completes; re-grant only if you re-run it.</li>
+          <li>Keep API keys out of the repository and out of the spreadsheet.</li>
+        </ul>
+      </div>
+      <div class="minibox">
+        <h5>Data handling</h5>
+        <ul>
+          <li>Documents contain account numbers, signatures, and addresses. Prefer local processing.</li>
+          <li>If an LLM is used for classification, decide deliberately whether full documents may leave the machine or only redacted extracted fields.</li>
+          <li>Encrypt the vault at rest; encrypt any backup that leaves the house.</li>
+        </ul>
+      </div>
+      <div class="minibox">
+        <h5>Retention</h5>
+        <ul>
+          <li>Basis records must survive until <strong>three years after the return reporting the sale</strong> &mdash; potentially decades from now.</li>
+          <li>Seven years post-sale is the safer target given substantial-understatement lookbacks.</li>
+          <li>Keep originals, not just extracted data. The PDF is the evidence; the spreadsheet row is only an index.</li>
+        </ul>
+      </div>
+      <div class="minibox">
+        <h5>Durability</h5>
+        <ul>
+          <li>Three copies, two media types, one off-site. Verify a restore annually &mdash; an untested backup is a rumor.</li>
+          <li>Open formats only: PDF, PNG, CSV. No proprietary container that needs a live subscription to read.</li>
+          <li>Make sure a spouse or executor knows where the vault is and how to open it.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">11</span><h3>Phased roadmap</h3></div>
+    <p>
+      Sequenced so that value lands early and the expensive automation is only built if the earlier phases
+      prove it is warranted. Effort labels describe scope and complexity, not calendar time.
+    </p>
+
+    <div class="phase">
+      <div class="phase-head"><h4>Phase 0 &mdash; Resolve the open questions</h4><span class="effort low">Low effort</span></div>
+      <p>Answer the questions in the second tab. Several of them &mdash; volume of history, prior rental or home-office use, whether the closing statement survives &mdash; materially change the design.</p>
+      <p class="ac"><b>Done when:</b> the questionnaire is answered and the build-vs-spreadsheet call in section 04 can be made on evidence rather than assumption.</p>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><h4>Phase 1 &mdash; Anchor the starting basis</h4><span class="effort low">Low effort</span></div>
+      <p>Locate the acquisition documents: closing disclosure or HUD-1/ALTA settlement statement, deed, and the original survey. Extract lines 4a, 4b, and 4c. Request archived copies from the title company or closing attorney now if they are missing, since retention windows are finite.</p>
+      <p class="ac"><b>Done when:</b> purchase price and includible closing costs are recorded with the settlement statement in the vault.</p>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><h4>Phase 2 &mdash; Stand up the vault and ledger</h4><span class="effort low">Low effort</span></div>
+      <p>Create the folder structure, naming convention, backup routine, and the ledger with the schema from section 05, pre-populated with the Pub 523 categories and worksheet lines as dropdowns. Enter the handful of projects you already remember, to validate the schema against reality.</p>
+      <p class="ac"><b>Done when:</b> a working ledger exists, backed up in three places, and produces a basis subtotal.</p>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><h4>Phase 3 &mdash; Financial sweep and project inventory</h4><span class="effort med">Medium effort</span></div>
+      <p>Export every year of bank and card statements available. Identify large and home-improvement-coded transactions. Build the master list of projects with dates, vendors, and amounts &mdash; independent of whether receipts have been found yet.</p>
+      <p class="ac"><b>Done when:</b> a project inventory exists spanning the full ownership period, each entry marked as documented or needing evidence.</p>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><h4>Phase 4 &mdash; Document harvest</h4><span class="effort high">High effort</span></div>
+      <p>Run the email, cloud, local, photo, retailer, and county-records sweeps against the project inventory. Deduplicate by hash into the vault. This is the phase where automation pays for itself, and where the disposable ingestion pipeline gets built if volume justifies it.</p>
+      <p class="ac"><b>Done when:</b> every project in the inventory is either documented, reconstructed from permit plus payment evidence, or explicitly written off as unrecoverable.</p>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><h4>Phase 5 &mdash; Classification and reconciliation</h4><span class="effort med">Medium effort</span></div>
+      <p>Work the review queue largest-dollar-first. Apply the reductions: depreciation, casualty losses deducted, insurance proceeds, energy credits, mitigation grants, easement payments. Back out improvements that are no longer part of the home. Flag the genuinely ambiguous for your CPA.</p>
+      <p class="ac"><b>Done when:</b> the ledger produces an adjusted basis figure with every row carrying a document reference and a confidence rating.</p>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><h4>Phase 6 &mdash; Ongoing capture</h4><span class="effort low">Low effort</span></div>
+      <p>Turn on the forwarding address, the watched folder, and the quick-entry form. Put the quarterly review and January reconciliation on the calendar as recurring commitments.</p>
+      <p class="ac"><b>Done when:</b> a new receipt reaches the ledger with under a minute of your attention, and the review cadence is scheduled.</p>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><h4>Phase 7 &mdash; Validate and hand off</h4><span class="effort low">Low effort</span></div>
+      <p>Have your CPA review the schedule and the flagged items once, while the reasoning is fresh and any gaps are still fixable. Perform a full restore test from backup. Document where everything lives for a spouse or executor.</p>
+      <p class="ac"><b>Done when:</b> a third party has confirmed the schedule is usable and a restore from cold backup has succeeded.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">12</span><h3>Risks</h3></div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Risk</th><th>Consequence</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td>Overstated basis from tracking only additions</td><td>The failure mode that draws penalties. Missing depreciation recapture or unrecorded insurance proceeds inflate basis.</td><td>Give reductions their own worksheet lines and a mandatory screening pass in Phase 5.</td></tr>
+          <tr><td>Receipts exist but evidence of payment does not</td><td>An invoice proves obligation, not payment. Weak on its own.</td><td>Require a <code>proof_of_payment</code> value on every row; the gap report surfaces rows missing it.</td></tr>
+          <tr><td>Replaced improvements never backed out</td><td>Basis silently drifts high over decades.</td><td>The <code>superseded_by</code> field plus a habit of logging removals at the time they happen.</td></tr>
+          <tr><td>Third-party records age out before you ask</td><td>The original settlement statement becomes unrecoverable.</td><td>Request from title company, insurer, and HOA in Phase 1, before the harvest.</td></tr>
+          <tr><td>Tooling outlives its usefulness</td><td>A decade-long horizon defeats most SaaS products and most side projects.</td><td>Keep the durable layer boring &mdash; folders, PDFs, CSV. Automation stays disposable and replaceable.</td></tr>
+          <tr><td>The habit lapses after the initial push</td><td>The historical work is preserved but new improvements go untracked.</td><td>Make ongoing capture near-zero-effort, and schedule the quarterly review as a real recurring commitment.</td></tr>
+          <tr><td>Aggressive classification of repairs as improvements</td><td>Overstated basis and a weak position if examined.</td><td>Use the <code>needs CPA</code> status freely. A defensible smaller number beats an indefensible larger one.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="sec-head"><span class="num">13</span><h3>Appendix &mdash; workbook specification</h3></div>
+    <p>If the answer to the build-vs-buy question is a spreadsheet, this is the shape it should take.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Sheet</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td><code>README</code></td><td>What this file is, where the vault lives, the naming convention, the backup locations, and the review cadence. Written for whoever opens it in 2045 &mdash; possibly not you.</td></tr>
+          <tr><td><code>Ledger</code></td><td>One row per basis event, using the schema in section 05. Validated dropdowns for worksheet line, category, treatment, and confidence.</td></tr>
+          <tr><td><code>Projects</code></td><td>One row per project with rolled-up cost, date range, permit number, and status.</td></tr>
+          <tr><td><code>Casualty</code></td><td>One row per storm or casualty event: repair spend, claim number, proceeds received, proceeds expected, whether a loss was deducted.</td></tr>
+          <tr><td><code>Reductions</code></td><td>Depreciation, energy credits, grants, rebates, easement payments &mdash; each tied to the event it offsets.</td></tr>
+          <tr><td><code>Worksheet2</code></td><td>Formula-driven roll-up to Pub 523 lines 4a&ndash;4f and 5a&ndash;5l, producing adjusted basis. No manual entry.</td></tr>
+          <tr><td><code>Projection</code></td><td>Assumed sale price and selling costs in; estimated gain versus exclusion out.</td></tr>
+          <tr><td><code>Gaps</code></td><td>Filtered view of rows missing documents, payment proof, or a confident classification.</td></tr>
+          <tr><td><code>Lookups</code></td><td>The dropdown source lists, kept in one place so categories stay consistent.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h4>Conventions worth fixing early</h4>
+    <ul>
+      <li><strong>File naming:</strong> <code>YYYY-MM-DD__vendor__description__amount.pdf</code>. Date-first sorts chronologically everywhere, forever.</li>
+      <li><strong>Folder layout:</strong> <code>/vault/&lt;year&gt;/&lt;project-id&gt;/</code>, with acquisition documents in <code>/vault/00-acquisition/</code>.</li>
+      <li><strong>Never edit a vault file.</strong> Corrections go in the ledger's notes, not in the evidence.</li>
+      <li><strong>One amount convention:</strong> record your net out-of-pocket cost, and put any offsetting grant, rebate, or insurance payment in <code>reimbursement</code> as a separate visible number rather than silently netting it.</li>
+    </ul>
+
+    <h4>References</h4>
+    <ul>
+      <li><a href="https://www.irs.gov/publications/p523" target="_blank" rel="noopener">IRS Publication 523, Selling Your Home</a> &mdash; basis adjustments, improvement categories, Worksheet 2.</li>
+      <li><a href="https://www.irs.gov/publications/p551" target="_blank" rel="noopener">IRS Publication 551, Basis of Assets</a> &mdash; general basis determination.</li>
+      <li><a href="https://www.irs.gov/publications/p530" target="_blank" rel="noopener">IRS Publication 530, Tax Information for Homeowners</a> &mdash; what is deductible versus capitalized.</li>
+      <li><a href="https://www.irs.gov/forms-pubs/about-form-5695" target="_blank" rel="noopener">Form 5695</a> &mdash; residential energy credits that reduce basis.</li>
+      <li><a href="https://mysafeflhome.com/" target="_blank" rel="noopener">My Safe Florida Home</a> &mdash; state hurricane mitigation grant program.</li>
+      <li>Your county property appraiser and building department portals &mdash; permit and improvement history.</li>
+    </ul>
+  </section>
+
+  <footer class="foot">
+    <p>
+      Draft plan, version 0.1. Prepared as a starting point for discussion &mdash; the open questions in the
+      second tab need answers before the build-versus-spreadsheet decision in section 04 can be settled.
+      Nothing here is tax advice; confirm classification decisions with a qualified CPA.
+    </p>
+  </footer>
+</div>
+
+<!-- ==================================================================== -->
+<!-- ========================= QUESTIONS TAB ============================ -->
+<!-- ==================================================================== -->
+<div class="panel" id="panel-questions" role="tabpanel" aria-labelledby="tab-questions" hidden>
+
+  <div class="q-toolbar">
+    <button class="btn primary" type="button" id="btn-save">Save answers</button>
+    <button class="btn" type="button" id="btn-md">Export Markdown</button>
+    <button class="btn" type="button" id="btn-json">Export JSON</button>
+    <button class="btn" type="button" id="btn-print">Print</button>
+    <span class="spacer"></span>
+    <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress-fill"></div></div>
+    <span class="status" id="status">&nbsp;</span>
+    <button class="btn ghost" type="button" id="btn-clear">Clear all</button>
+  </div>
+
+  <section class="card" style="margin-bottom:24px">
+    <div class="sec-head"><span class="num">?</span><h3>Questions that need your answers</h3></div>
+    <p>
+      Each answer below changes something concrete in the plan &mdash; the note beneath each question
+      says what. Nothing is required; answer what you can and leave the rest. Your responses save
+      automatically in this browser and stay on your machine, so you can close the file and come back to it.
+      When you are ready to hand them back, use <strong>Export Markdown</strong>.
+    </p>
+    <div class="callout warn">
+      <span class="tag">Where your answers live</span>
+      <p>
+        Answers are stored in this browser's local storage for this file only. They are not uploaded anywhere.
+        Clearing browser data, or opening the file from a different path or a different browser, will show an
+        empty form &mdash; so export once you have finished a pass.
+      </p>
+    </div>
+  </section>
+
+  <form id="qform" autocomplete="off">
+
+  <!-- ---------------- A ---------------- -->
+  <fieldset class="qgroup" data-group="Property &amp; ownership">
+    <legend>A &middot; Property &amp; ownership</legend>
+    <p class="qgroup-intro">These set the baseline basis and determine which exclusion limit applies.</p>
+
+    <div class="q">
+      <label class="q-label" for="q-a1"><span class="qid">A1</span>What county is the property in?</label>
+      <p class="q-help">County name is enough &mdash; no need for the street address.</p>
+      <input type="text" id="q-a1" name="A1" placeholder="e.g. Hillsborough" />
+      <p class="q-why">Determines which permit portal and property appraiser site to harvest from, and whether the Miami-Dade doc stamp rate applies.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-a2"><span class="qid">A2</span>When did you acquire it, and how?</label>
+      <p class="q-help">Date plus the acquisition method.</p>
+      <div class="cols" style="gap:12px">
+        <div><span class="subq-label">Acquisition date</span><input type="date" id="q-a2" name="A2" /></div>
+        <div><span class="subq-label">How acquired</span>
+          <select id="q-a2b" name="A2b">
+            <option value="">Select&hellip;</option>
+            <option>Purchased from an unrelated seller</option>
+            <option>Built on land I owned</option>
+            <option>Inherited</option>
+            <option>Received as a gift</option>
+            <option>Acquired through divorce settlement</option>
+            <option>1031 exchange or other rollover</option>
+            <option>Other / not sure</option>
+          </select>
+        </div>
+      </div>
+      <p class="q-why">Inheritance means stepped-up basis at date of death and most pre-death improvements become irrelevant. A gift carries over the donor's basis. Either answer changes how far back the harvest needs to reach.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-a3"><span class="qid">A3</span>Do you still have the closing documents?</label>
+      <p class="q-help">Closing Disclosure, HUD-1, or ALTA settlement statement from when you bought.</p>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="A3" value="Yes, I have it" /> Yes, I have it</label>
+        <label class="opt"><input type="radio" name="A3" value="Somewhere, needs finding" /> Somewhere, needs finding</label>
+        <label class="opt"><input type="radio" name="A3" value="No, it is gone" /> No, it is gone</label>
+        <label class="opt"><input type="radio" name="A3" value="Not sure" /> Not sure</label>
+      </div>
+      <p class="q-why">This single document supplies Worksheet 2 lines 4a, 4b, and 4c. If it is gone, Phase 1 starts with a records request to the title company or closing attorney, which is time-sensitive.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-a4"><span class="qid">A4</span>What is your expected filing status at sale?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="A4" value="Single" /> Single</label>
+        <label class="opt"><input type="radio" name="A4" value="Married filing jointly" /> Married filing jointly</label>
+        <label class="opt"><input type="radio" name="A4" value="Married filing separately" /> Married filing separately</label>
+        <label class="opt"><input type="radio" name="A4" value="Not sure" /> Not sure</label>
+      </div>
+      <p class="q-why">Sets the exclusion at $250,000 or $500,000, which determines how much basis tracking actually matters for you.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-a5"><span class="qid">A5</span>Roughly what did you pay, and roughly what is it worth now?</label>
+      <p class="q-help">Ballpark figures are fine. Skip if you would rather not put numbers in the file.</p>
+      <div class="cols" style="gap:12px">
+        <div><span class="subq-label">Approximate purchase price</span><input type="text" id="q-a5" name="A5" placeholder="e.g. 385,000" /></div>
+        <div><span class="subq-label">Approximate current value</span><input type="text" id="q-a5b" name="A5b" placeholder="e.g. 950,000" /></div>
+      </div>
+      <p class="q-why">The gap between these two, measured against your exclusion, tells us whether this is an urgent project or a prudent one.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-a6"><span class="qid">A6</span>Has any part of the home ever been rented, used for a home office deduction, or listed short-term?</label>
+      <p class="q-help">Includes Airbnb or VRBO, a rented room, a detached unit, or a home office claimed on a return.</p>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="A6" value="No, never" /> No, never</label>
+        <label class="opt"><input type="radio" name="A6" value="Yes, home office deduction" /> Yes, home office deduction</label>
+        <label class="opt"><input type="radio" name="A6" value="Yes, rented long-term" /> Yes, rented long-term</label>
+        <label class="opt"><input type="radio" name="A6" value="Yes, short-term rental" /> Yes, short-term rental</label>
+        <label class="opt"><input type="radio" name="A6" value="Not sure" /> Not sure</label>
+      </div>
+      <div class="subq"><span class="subq-label">If yes, roughly which years and what portion of the home?</span>
+        <textarea id="q-a6b" name="A6b" placeholder="e.g. one bedroom used as an office, 2018 through 2022"></textarea>
+      </div>
+      <p class="q-why">Triggers depreciation recapture under Worksheet 2 line 5a, which reduces basis and is not covered by the Section 121 exclusion. It applies to depreciation "allowed or allowable" &mdash; meaning it can apply even if you never claimed it.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-a7"><span class="qid">A7</span>Is a sale on the horizon?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="A7" value="Under 2 years" /> Under 2 years</label>
+        <label class="opt"><input type="radio" name="A7" value="2 to 5 years" /> 2 to 5 years</label>
+        <label class="opt"><input type="radio" name="A7" value="5 to 10 years" /> 5 to 10 years</label>
+        <label class="opt"><input type="radio" name="A7" value="10+ years / no plans" /> 10+ years or no plans</label>
+      </div>
+      <p class="q-why">A near-term sale means front-load the historical reconstruction and skip elaborate automation. A distant horizon flips the priority to a durable ongoing-capture habit.</p>
+    </div>
+  </fieldset>
+
+  <!-- ---------------- B ---------------- -->
+  <fieldset class="qgroup" data-group="Scope of the historical backlog">
+    <legend>B &middot; Scope of the historical backlog</legend>
+    <p class="qgroup-intro">This section drives the single biggest design decision: whether to build automation at all.</p>
+
+    <div class="q">
+      <label class="q-label" for="q-b1"><span class="qid">B1</span>Roughly how many separate improvement projects have there been?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="B1" value="Under 10" /> Under 10</label>
+        <label class="opt"><input type="radio" name="B1" value="10 to 30" /> 10 to 30</label>
+        <label class="opt"><input type="radio" name="B1" value="30 to 75" /> 30 to 75</label>
+        <label class="opt"><input type="radio" name="B1" value="75+" /> 75 or more</label>
+        <label class="opt"><input type="radio" name="B1" value="No idea" /> No idea</label>
+      </div>
+      <p class="q-why">Under about 30 projects, manual entry into a spreadsheet beats building anything. Above roughly 75, the ingestion pipeline in section 06 pays for itself.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-b2"><span class="qid">B2</span>Which major projects have been done? List what comes to mind.</label>
+      <p class="q-help">Rough dates and costs if you remember them; the list itself is the valuable part.</p>
+      <textarea id="q-b2" name="B2" style="min-height:130px" placeholder="Roof, impact windows, HVAC, kitchen, bathrooms, pool, screen enclosure, pavers, driveway, fence, seawall, dock, generator, solar, re-pipe, electrical panel, flooring, addition&hellip;"></textarea>
+      <p class="q-why">Becomes the seed for the Phase 3 project inventory and defines the search terms for the email and file sweep.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-b3"><span class="qid">B3</span>Does any record of this already exist?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="B3" value="Nothing" /> Nothing</label>
+        <label class="opt"><input type="radio" name="B3" value="A folder of paper" /> A folder of paper</label>
+        <label class="opt"><input type="radio" name="B3" value="A spreadsheet" /> A spreadsheet</label>
+        <label class="opt"><input type="radio" name="B3" value="Scattered digital files" /> Scattered digital files</label>
+        <label class="opt"><input type="radio" name="B3" value="Some combination" /> Some combination</label>
+      </div>
+      <p class="q-why">An existing spreadsheet becomes the migration starting point rather than something to rebuild. Paper means scanning enters the critical path.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-b4"><span class="qid">B4</span>Any projects you know are undocumented?</label>
+      <p class="q-help">Work you are certain happened but for which no receipt survives.</p>
+      <textarea id="q-b4" name="B4" placeholder="e.g. the 2011 re-roof, paid the contractor by check, no invoice remains"></textarea>
+      <p class="q-why">Determines how much reconstruction work Phase 4 needs: permit records plus bank statements can rebuild a defensible record when receipts are gone.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-b5"><span class="qid">B5</span>Has anything been installed and later removed or replaced?</label>
+      <p class="q-help">Carpet replaced by tile, an old pool deck redone, a first A/C unit replaced by a second.</p>
+      <textarea id="q-b5" name="B5" placeholder="e.g. carpet installed 2009, replaced with LVP in 2019"></textarea>
+      <p class="q-why">Improvements no longer part of the home must come back out of basis. Catching these now is far easier than reconstructing them at sale.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-b6"><span class="qid">B6</span>Below what dollar amount is an item not worth tracking?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="B6" value="Track everything" /> Track everything</label>
+        <label class="opt"><input type="radio" name="B6" value="$250" /> $250</label>
+        <label class="opt"><input type="radio" name="B6" value="$500" /> $500</label>
+        <label class="opt"><input type="radio" name="B6" value="$1,000" /> $1,000</label>
+        <label class="opt"><input type="radio" name="B6" value="$2,500" /> $2,500</label>
+      </div>
+      <p class="q-why">Sets the review-queue filter. A threshold that is too low buries you in noise; too high leaves real money uncounted. Note that small DIY material purchases can aggregate into a substantial project.</p>
+    </div>
+  </fieldset>
+
+  <!-- ---------------- C ---------------- -->
+  <fieldset class="qgroup" data-group="Basis reductions &amp; Florida events">
+    <legend>C &middot; Basis reductions &amp; Florida events</legend>
+    <p class="qgroup-intro">The items most homeowners miss. Getting these wrong overstates basis, which is the risky direction.</p>
+
+    <div class="q">
+      <label class="q-label" for="q-c1"><span class="qid">C1</span>Any hurricane or flood damage, with an insurance claim?</label>
+      <p class="q-help">Named storms, plumbing failures, fire &mdash; anything that generated a claim.</p>
+      <textarea id="q-c1" name="C1" placeholder="e.g. Hurricane Ian 2022, roof and lanai claim, received approx $28,000; Hurricane Milton 2024, fence and screen, denied"></textarea>
+      <p class="q-why">Repair spending increases basis under line 4e, but proceeds received or expected reduce it under line 5c. Both sides must be recorded together or the number is wrong.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-c2"><span class="qid">C2</span>Was a casualty loss ever deducted on a federal return?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="C2" value="Yes" /> Yes</label>
+        <label class="opt"><input type="radio" name="C2" value="No" /> No</label>
+        <label class="opt"><input type="radio" name="C2" value="Not sure / need to check returns" /> Not sure, need to check returns</label>
+      </div>
+      <p class="q-why">A deducted casualty loss reduces basis under line 5b. This is separate from the insurance proceeds question and is commonly overlooked.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-c3"><span class="qid">C3</span>Any energy credits claimed, or utility rebates received?</label>
+      <p class="q-help">Solar, battery storage, heat pump, impact-rated windows or doors, insulation, geothermal, home energy audit. Form 5695 on any return.</p>
+      <textarea id="q-c3" name="C3" placeholder="e.g. solar installed 2021, claimed federal credit of approx $7,800; utility rebate on the heat pump"></textarea>
+      <p class="q-why">Credits and subsidies that paid you back for improvements included in basis must be subtracted under line 5e.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-c4"><span class="qid">C4</span>Any My Safe Florida Home, FEMA, or other mitigation grants?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="C4" value="Yes, My Safe Florida Home" /> Yes, My Safe Florida Home</label>
+        <label class="opt"><input type="radio" name="C4" value="Yes, FEMA or other" /> Yes, FEMA or other</label>
+        <label class="opt"><input type="radio" name="C4" value="No" /> No</label>
+        <label class="opt"><input type="radio" name="C4" value="Applied, not yet received" /> Applied, not yet received</label>
+      </div>
+      <div class="subq"><span class="subq-label">If yes, grant amount and what it funded</span>
+        <input type="text" id="q-c4b" name="C4b" placeholder="e.g. $10,000 toward impact windows, 2024" />
+      </div>
+      <p class="q-why">Only your out-of-pocket share belongs in basis. The grant portion was not your cost, so it has to be identified and excluded.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-c5"><span class="qid">C5</span>Any HOA or condo special assessments?</label>
+      <textarea id="q-c5" name="C5" placeholder="e.g. 2023 assessment of $6,200 for seawall replacement"></textarea>
+      <p class="q-why">Assessments for local capital improvements add to basis under line 4f; assessments merely for repairs or maintenance do not. The distinction requires the association's own resolution language.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-c6"><span class="qid">C6</span>Any easement, right-of-way, or conservation payments received?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="C6" value="Yes" /> Yes</label>
+        <label class="opt"><input type="radio" name="C6" value="No" /> No</label>
+        <label class="opt"><input type="radio" name="C6" value="Not sure" /> Not sure</label>
+      </div>
+      <p class="q-why">Payments for granting an easement reduce basis under line 5d. Utility and drainage easements are common in Florida developments.</p>
+    </div>
+  </fieldset>
+
+  <!-- ---------------- D ---------------- -->
+  <fieldset class="qgroup" data-group="Where the receipts actually are">
+    <legend>D &middot; Where the receipts actually are</legend>
+    <p class="qgroup-intro">Determines which harvest connectors get built and in what order.</p>
+
+    <div class="q">
+      <label class="q-label" for="q-d1"><span class="qid">D1</span>Which email accounts should be searched?</label>
+      <p class="q-help">Include old accounts and a spouse's account &mdash; contractor correspondence is often split across both.</p>
+      <textarea id="q-d1" name="D1" placeholder="e.g. personal Gmail since 2009, an old Yahoo account from before that, spouse's Outlook"></textarea>
+      <p class="q-why">Each provider needs a different connector. Knowing how far back mail actually goes sets expectations for what the sweep can recover.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-d2"><span class="qid">D2</span>Are you comfortable granting read-only API access to those mailboxes?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="D2" value="Yes, read-only OAuth is fine" /> Yes, read-only OAuth is fine</label>
+        <label class="opt"><input type="radio" name="D2" value="Prefer a manual export file" /> Prefer a manual export file</label>
+        <label class="opt"><input type="radio" name="D2" value="Prefer to search manually myself" /> Prefer to search manually myself</label>
+        <label class="opt"><input type="radio" name="D2" value="Undecided" /> Undecided</label>
+      </div>
+      <p class="q-why">API access enables automation. A manual export still works but shifts the effort to you. This is the main privacy-versus-convenience tradeoff in the plan.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-d3"><span class="qid">D3</span>Which cloud storage services hold home documents?</label>
+      <div class="opts">
+        <label class="opt"><input type="checkbox" name="D3" value="Google Drive" /> Google Drive</label>
+        <label class="opt"><input type="checkbox" name="D3" value="Dropbox" /> Dropbox</label>
+        <label class="opt"><input type="checkbox" name="D3" value="iCloud Drive" /> iCloud Drive</label>
+        <label class="opt"><input type="checkbox" name="D3" value="OneDrive" /> OneDrive</label>
+        <label class="opt"><input type="checkbox" name="D3" value="Box" /> Box</label>
+        <label class="opt"><input type="checkbox" name="D3" value="None" /> None</label>
+      </div>
+      <p class="q-why">Each needs its own connector, and the same document often exists in several &mdash; which is why the vault deduplicates by content hash.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-d4"><span class="qid">D4</span>How much paper is there, and can it be scanned?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="D4" value="No paper" /> No paper</label>
+        <label class="opt"><input type="radio" name="D4" value="A folder or two" /> A folder or two</label>
+        <label class="opt"><input type="radio" name="D4" value="A file drawer" /> A file drawer</label>
+        <label class="opt"><input type="radio" name="D4" value="Boxes" /> Boxes</label>
+      </div>
+      <div class="subq"><span class="subq-label">Scanning capability available</span>
+        <select id="q-d4b" name="D4b">
+          <option value="">Select&hellip;</option>
+          <option>Phone camera only</option>
+          <option>Flatbed scanner</option>
+          <option>Sheet-fed scanner or multifunction printer</option>
+          <option>Would use a scanning service</option>
+        </select>
+      </div>
+      <p class="q-why">Paper volume without a sheet-fed scanner can become the longest pole in Phase 4. Worth knowing before committing to a sequence.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-d5"><span class="qid">D5</span>How far back can you export bank and card statements?</label>
+      <p class="q-help">Which institutions, and how many years each retains online.</p>
+      <textarea id="q-d5" name="D5" placeholder="e.g. Chase card back to 2015, credit union checking back to 2018, older statements only on paper"></textarea>
+      <p class="q-why">The financial sweep in Phase 3 defines the project inventory. Where statements do not reach, county permit records become the primary discovery source instead.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-d6"><span class="qid">D6</span>Which home-improvement retailers do you buy from with an online account?</label>
+      <p class="q-help">Retailer order history often goes back much further than your email does.</p>
+      <textarea id="q-d6" name="D6" placeholder="e.g. Home Depot Pro account, Lowe's, Amazon, Ferguson"></textarea>
+      <p class="q-why">Retailer exports give itemized line detail that email confirmations lack, which matters for splitting mixed carts between capital and consumable items.</p>
+    </div>
+  </fieldset>
+
+  <!-- ---------------- E ---------------- -->
+  <fieldset class="qgroup" data-group="Tooling &amp; platform">
+    <legend>E &middot; Tooling &amp; platform</legend>
+    <p class="qgroup-intro">Settles the build-versus-buy decision in section 04.</p>
+
+    <div class="q">
+      <label class="q-label" for="q-e1"><span class="qid">E1</span>What should the system of record be?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="E1" value="Excel" /> Excel</label>
+        <label class="opt"><input type="radio" name="E1" value="Google Sheets" /> Google Sheets</label>
+        <label class="opt"><input type="radio" name="E1" value="Airtable or Notion" /> Airtable or Notion</label>
+        <label class="opt"><input type="radio" name="E1" value="Custom application" /> Custom application</label>
+        <label class="opt"><input type="radio" name="E1" value="Open to a recommendation" /> Open to a recommendation</label>
+      </div>
+      <p class="q-why">Google Sheets makes sharing with a spouse or CPA trivial; Excel keeps everything local. A custom app only makes sense if B1 came back high.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-e2"><span class="qid">E2</span>What is your comfort level with running code?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="E2" value="Comfortable with a terminal and scripts" /> Comfortable with a terminal and scripts</label>
+        <label class="opt"><input type="radio" name="E2" value="Can follow precise instructions" /> Can follow precise instructions</label>
+        <label class="opt"><input type="radio" name="E2" value="Prefer no code at all" /> Prefer no code at all</label>
+      </div>
+      <p class="q-why">Decides whether the harvest is scripted, run by an assistant on your behalf, or replaced with a manual checklist.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-e3"><span class="qid">E3</span>Can documents be processed by a cloud service, or must everything stay local?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="E3" value="Cloud processing is fine" /> Cloud processing is fine</label>
+        <label class="opt"><input type="radio" name="E3" value="Only redacted or extracted fields may leave" /> Only redacted fields may leave</label>
+        <label class="opt"><input type="radio" name="E3" value="Strictly local only" /> Strictly local only</label>
+      </div>
+      <p class="q-why">Receipts and closing documents carry account numbers and signatures. Strictly-local rules out hosted OCR and cloud LLM classification, which means slower and more manual, but fully private.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-e4"><span class="qid">E4</span>What is the budget for tooling?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="E4" value="Free tools only" /> Free tools only</label>
+        <label class="opt"><input type="radio" name="E4" value="Under $100 one-time" /> Under $100 one-time</label>
+        <label class="opt"><input type="radio" name="E4" value="A few hundred is fine" /> A few hundred is fine</label>
+        <label class="opt"><input type="radio" name="E4" value="Whatever it takes" /> Whatever it takes</label>
+      </div>
+      <p class="q-why">OCR and extraction APIs are usage-priced. A one-time sweep of a few thousand documents is modest, but the budget determines whether hosted services are on the table at all.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-e5"><span class="qid">E5</span>Which devices will you capture receipts on?</label>
+      <div class="opts">
+        <label class="opt"><input type="checkbox" name="E5" value="Mac" /> Mac</label>
+        <label class="opt"><input type="checkbox" name="E5" value="Windows" /> Windows</label>
+        <label class="opt"><input type="checkbox" name="E5" value="iPhone" /> iPhone</label>
+        <label class="opt"><input type="checkbox" name="E5" value="Android" /> Android</label>
+        <label class="opt"><input type="checkbox" name="E5" value="iPad or tablet" /> iPad or tablet</label>
+      </div>
+      <p class="q-why">Shapes the snap-and-drop path in section 08 &mdash; a Shortcut on iOS versus a watched folder versus a share-target app.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-e6"><span class="qid">E6</span>Who else needs access?</label>
+      <textarea id="q-e6" name="E6" placeholder="e.g. spouse enters receipts too; CPA needs read access once a year"></textarea>
+      <p class="q-why">Multiple contributors push toward a shared cloud system of record and make the review workflow more important than the storage choice.</p>
+    </div>
+  </fieldset>
+
+  <!-- ---------------- F ---------------- -->
+  <fieldset class="qgroup" data-group="Process &amp; governance">
+    <legend>F &middot; Process &amp; governance</legend>
+    <p class="qgroup-intro">Determines who makes judgment calls and how the system stays alive over a long horizon.</p>
+
+    <div class="q">
+      <label class="q-label" for="q-f1"><span class="qid">F1</span>Do you have a CPA, and will they review this?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="F1" value="Yes, and they will review" /> Yes, and they will review</label>
+        <label class="opt"><input type="radio" name="F1" value="Yes, but only at sale" /> Yes, but only at sale</label>
+        <label class="opt"><input type="radio" name="F1" value="No CPA currently" /> No CPA currently</label>
+        <label class="opt"><input type="radio" name="F1" value="Self-prepare returns" /> I self-prepare returns</label>
+      </div>
+      <p class="q-why">If a CPA reviews, the tool can be aggressive about flagging ambiguity for them. Self-preparing means the classification rules need to be more conservative and better documented.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-f2"><span class="qid">F2</span>How much effort are you willing to spend on the historical reconstruction?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="F2" value="A few hours total" /> A few hours total</label>
+        <label class="opt"><input type="radio" name="F2" value="A weekend project" /> A weekend project</label>
+        <label class="opt"><input type="radio" name="F2" value="Willing to chip away over months" /> Willing to chip away over months</label>
+        <label class="opt"><input type="radio" name="F2" value="Whatever it takes to be complete" /> Whatever it takes to be complete</label>
+      </div>
+      <p class="q-why">A hard effort ceiling means ruthlessly prioritizing by dollar impact and accepting that small items go untracked.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-f3"><span class="qid">F3</span>What review cadence will you realistically keep?</label>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="F3" value="Monthly" /> Monthly</label>
+        <label class="opt"><input type="radio" name="F3" value="Quarterly" /> Quarterly</label>
+        <label class="opt"><input type="radio" name="F3" value="Annually at tax time" /> Annually at tax time</label>
+        <label class="opt"><input type="radio" name="F3" value="Only when something happens" /> Only when something happens</label>
+      </div>
+      <p class="q-why">Be honest here rather than aspirational. A cadence you actually keep beats one you abandon, and it changes how much the capture step must be automated.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-f4"><span class="qid">F4</span>Where should the backups live?</label>
+      <p class="q-help">Aiming for three copies, two media types, one off-site.</p>
+      <textarea id="q-f4" name="F4" placeholder="e.g. laptop, external drive in a fire safe, encrypted Backblaze"></textarea>
+      <p class="q-why">These records may need to survive decades. The backup plan is the part of this system most likely to be quietly neglected.</p>
+    </div>
+
+    <div class="q">
+      <label class="q-label" for="q-f5"><span class="qid">F5</span>Anything else about the property or your situation that should shape this?</label>
+      <textarea id="q-f5" name="F5" style="min-height:110px" placeholder="Trust or LLC ownership, a co-owner, plans to convert to a rental, an adjacent lot, a prior 1031 exchange, an inherited partial interest&hellip;"></textarea>
+      <p class="q-why">Ownership structures, co-owners, and prior rollovers all change the basis calculation in ways worth catching before any building starts.</p>
+    </div>
+  </fieldset>
+
+  </form>
+
+  <footer class="foot">
+    <p>
+      Answers save automatically to this browser. Use <strong>Export Markdown</strong> to produce a copy you
+      can send back, or <strong>Export JSON</strong> for a machine-readable version.
+    </p>
+  </footer>
+</div>
+
+</div><!-- /wrap -->
+
+<dialog class="export" id="dlg">
+  <div class="dlg-head">
+    <h4 id="dlg-title">Export</h4>
+    <button class="btn ghost" type="button" id="dlg-x" aria-label="Close">Close</button>
+  </div>
+  <div class="dlg-body">
+    <textarea id="dlg-text" readonly spellcheck="false"></textarea>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn" type="button" id="dlg-copy">Copy to clipboard</button>
+    <button class="btn primary" type="button" id="dlg-dl">Download file</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "fl-cost-basis-plan.answers.v1";
+
+  /* ---------------------------------------------------------------- tabs */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+
+  function selectTab(tab) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener("click", function () { selectTab(tab); });
+    tab.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var next = tabs[(i + d + tabs.length) % tabs.length];
+      next.focus();
+      selectTab(next);
+    });
+  });
+
+  /* ------------------------------------------------------------- toast */
+  var toastEl = document.getElementById("toast");
+  var toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 2200);
+  }
+
+  /* ------------------------------------------------- question metadata */
+  var form = document.getElementById("qform");
+
+  // Build an ordered model of every question from the DOM so the export
+  // stays in sync with the markup automatically.
+  var questions = Array.prototype.slice.call(form.querySelectorAll(".q")).map(function (qEl) {
+    var groupEl = qEl.closest("fieldset.qgroup");
+    var labelEl = qEl.querySelector(".q-label");
+    var idEl = qEl.querySelector(".qid");
+    var text = labelEl ? labelEl.textContent.replace(/\s+/g, " ").trim() : "";
+    var code = idEl ? idEl.textContent.trim() : "";
+    if (code) text = text.slice(code.length).trim();
+
+    var fields = Array.prototype.slice
+      .call(qEl.querySelectorAll("input, select, textarea"))
+      .filter(function (el) { return el.name; });
+
+    var names = [];
+    fields.forEach(function (el) {
+      if (names.indexOf(el.name) === -1) names.push(el.name);
+    });
+
+    return {
+      code: code,
+      text: text,
+      group: groupEl ? groupEl.getAttribute("data-group") : "",
+      names: names,
+      el: qEl
+    };
+  });
+
+  var allNames = [];
+  questions.forEach(function (q) {
+    q.names.forEach(function (n) { if (allNames.indexOf(n) === -1) allNames.push(n); });
+  });
+
+  function fieldsFor(name) {
+    return Array.prototype.slice.call(form.querySelectorAll('[name="' + name + '"]'));
+  }
+
+  function valueOf(name) {
+    var els = fieldsFor(name);
+    if (!els.length) return "";
+    var type = els[0].type;
+    if (type === "radio") {
+      var picked = els.filter(function (e) { return e.checked; })[0];
+      return picked ? picked.value : "";
+    }
+    if (type === "checkbox") {
+      return els.filter(function (e) { return e.checked; }).map(function (e) { return e.value; });
+    }
+    return els[0].value.trim();
+  }
+
+  function isFilled(v) {
+    return Array.isArray(v) ? v.length > 0 : String(v || "").length > 0;
+  }
+
+  function collect() {
+    var out = {};
+    allNames.forEach(function (n) { out[n] = valueOf(n); });
+    return out;
+  }
+
+  /* ------------------------------------------------------------ persist */
+  function save(quiet) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        savedAt: new Date().toISOString(),
+        answers: collect()
+      }));
+      if (!quiet) toast("Answers saved");
+      return true;
+    } catch (err) {
+      if (!quiet) toast("Could not save \u2014 storage unavailable");
+      return false;
+    }
+  }
+
+  function load() {
+    var raw;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch (err) { return null; }
+    if (!raw) return null;
+    var data;
+    try { data = JSON.parse(raw); } catch (err) { return null; }
+    var answers = (data && data.answers) || {};
+
+    Object.keys(answers).forEach(function (name) {
+      var els = fieldsFor(name);
+      if (!els.length) return;
+      var v = answers[name];
+      var type = els[0].type;
+      if (type === "radio") {
+        els.forEach(function (e) { e.checked = e.value === v; });
+      } else if (type === "checkbox") {
+        var list = Array.isArray(v) ? v : [];
+        els.forEach(function (e) { e.checked = list.indexOf(e.value) !== -1; });
+      } else {
+        els[0].value = v || "";
+      }
+    });
+    return data;
+  }
+
+  /* ------------------------------------------------------------ status */
+  var statusEl = document.getElementById("status");
+  var fillEl = document.getElementById("progress-fill");
+  var countEl = document.getElementById("tab-q-count");
+  var lastSaved = null;
+
+  function refresh() {
+    var done = 0;
+    questions.forEach(function (q) {
+      var any = q.names.some(function (n) { return isFilled(valueOf(n)); });
+      if (any) done++;
+      q.el.classList.toggle("is-answered", any);
+    });
+
+    allNames.forEach(function (n) {
+      var filled = isFilled(valueOf(n));
+      fieldsFor(n).forEach(function (el) {
+        if (el.type !== "radio" && el.type !== "checkbox") {
+          el.classList.toggle("answered", filled);
+        }
+      });
+    });
+
+    var total = questions.length;
+    countEl.textContent = done + "/" + total;
+    fillEl.style.width = (total ? Math.round((done / total) * 100) : 0) + "%";
+    statusEl.innerHTML = "<b>" + done + "</b> of " + total + " answered" +
+      (lastSaved ? " \u00b7 saved " + lastSaved : "");
+  }
+
+  var saveTimer;
+  form.addEventListener("input", function () {
+    refresh();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      if (save(true)) {
+        lastSaved = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        refresh();
+      }
+    }, 700);
+  });
+  form.addEventListener("change", function () {
+    refresh();
+    if (save(true)) {
+      lastSaved = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      refresh();
+    }
+  });
+
+  /* ------------------------------------------------------------ export */
+  function buildMarkdown() {
+    var lines = [];
+    lines.push("# Cost Basis Tracker \u2014 Answers to Open Questions");
+    lines.push("");
+    lines.push("Florida primary residence \u00b7 exported " + new Date().toLocaleString());
+    lines.push("");
+
+    var answered = questions.filter(function (q) {
+      return q.names.some(function (n) { return isFilled(valueOf(n)); });
+    }).length;
+    lines.push("**" + answered + " of " + questions.length + " questions answered.**");
+    lines.push("");
+
+    var currentGroup = null;
+    questions.forEach(function (q) {
+      if (q.group !== currentGroup) {
+        currentGroup = q.group;
+        lines.push("");
+        lines.push("## " + currentGroup);
+        lines.push("");
+      }
+      lines.push("### " + (q.code ? q.code + ". " : "") + q.text);
+      var wrote = false;
+      q.names.forEach(function (n) {
+        var v = valueOf(n);
+        if (!isFilled(v)) return;
+        wrote = true;
+
+        var parts = Array.isArray(v)
+          ? [v.join(", ")]
+          : String(v).split("\n").map(function (s) { return s.trim(); })
+              .filter(function (s) { return s.length; });
+
+        if (q.names.length > 1) {
+          // Label the sub-field, then indent any continuation lines under it.
+          lines.push("- **" + n + ":** " + parts[0]);
+          parts.slice(1).forEach(function (ln) { lines.push("  " + ln); });
+        } else {
+          // A free-text list reads best as one bullet per line.
+          parts.forEach(function (ln) { lines.push("- " + ln); });
+        }
+      });
+      if (!wrote) lines.push("- _(no answer)_");
+      lines.push("");
+    });
+
+    return lines.join("\n");
+  }
+
+  function buildJSON() {
+    return JSON.stringify({
+      document: "Florida primary residence cost basis plan",
+      version: "0.1",
+      exportedAt: new Date().toISOString(),
+      questions: questions.map(function (q) {
+        var answers = {};
+        q.names.forEach(function (n) { answers[n] = valueOf(n); });
+        return { id: q.code, group: q.group, question: q.text, answers: answers };
+      })
+    }, null, 2);
+  }
+
+  var dlg = document.getElementById("dlg");
+  var dlgText = document.getElementById("dlg-text");
+  var dlgTitle = document.getElementById("dlg-title");
+  var pending = { name: "answers.md", type: "text/markdown" };
+
+  function openExport(title, body, filename, mime) {
+    dlgTitle.textContent = title;
+    dlgText.value = body;
+    pending = { name: filename, type: mime };
+    if (typeof dlg.showModal === "function") dlg.showModal();
+    else dlg.setAttribute("open", "");
+    dlgText.scrollTop = 0;
+  }
+
+  function stamp() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  document.getElementById("btn-md").addEventListener("click", function () {
+    save(true);
+    openExport("Answers as Markdown", buildMarkdown(),
+      "cost-basis-answers-" + stamp() + ".md", "text/markdown");
+  });
+
+  document.getElementById("btn-json").addEventListener("click", function () {
+    save(true);
+    openExport("Answers as JSON", buildJSON(),
+      "cost-basis-answers-" + stamp() + ".json", "application/json");
+  });
+
+  document.getElementById("btn-save").addEventListener("click", function () {
+    if (save(false)) {
+      lastSaved = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      refresh();
+    }
+  });
+
+  document.getElementById("btn-print").addEventListener("click", function () {
+    window.print();
+  });
+
+  document.getElementById("btn-clear").addEventListener("click", function () {
+    if (!window.confirm("Clear every answer on this page? This cannot be undone.")) return;
+    allNames.forEach(function (n) {
+      fieldsFor(n).forEach(function (el) {
+        if (el.type === "radio" || el.type === "checkbox") el.checked = false;
+        else el.value = "";
+      });
+    });
+    try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* ignore */ }
+    lastSaved = null;
+    refresh();
+    toast("All answers cleared");
+  });
+
+  document.getElementById("dlg-x").addEventListener("click", function () {
+    if (typeof dlg.close === "function") dlg.close();
+    else dlg.removeAttribute("open");
+  });
+
+  document.getElementById("dlg-copy").addEventListener("click", function () {
+    dlgText.select();
+    var ok = false;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(dlgText.value).then(
+        function () { toast("Copied to clipboard"); },
+        function () { toast("Select the text and copy manually"); }
+      );
+      return;
+    }
+    try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+    toast(ok ? "Copied to clipboard" : "Select the text and copy manually");
+  });
+
+  document.getElementById("dlg-dl").addEventListener("click", function () {
+    var blob = new Blob([dlgText.value], { type: pending.type + ";charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = pending.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+    toast("Downloaded " + pending.name);
+  });
+
+  /* -------------------------------------------------------------- init */
+  var loaded = load();
+  if (loaded && loaded.savedAt) {
+    lastSaved = new Date(loaded.savedAt).toLocaleString([], {
+      month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+    });
+  }
+  refresh();
+
+  if (location.hash === "#questions") selectTab(document.getElementById("tab-questions"));
+})();
+</script>
+</body>
+</html>
